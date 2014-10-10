@@ -15,6 +15,8 @@ import javax.swing.ButtonGroup;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ProjetTaxiGUI_v5 extends JFrame {
 
@@ -32,11 +34,10 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				int[] saisies = {0,0,0,0};
 				try {
 					ProjetTaxiGUI_v5 frame = new ProjetTaxiGUI_v5();
 					frame.setVisible(true);
-					
+					frame.txtDep.requestFocus();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -70,11 +71,22 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 		txtDep.setColumns(2);
 		
 		JButton btnSuivant = new JButton("Suivant");
+		btnSuivant.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				module.setSaisies(module.checkDep(txtDep, lblMsgError), 0);
+			}
+		});
 		btnSuivant.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		btnSuivant.setBounds(300, 30, 93, 18);
 		contentPane.add(btnSuivant);
 		
 		JButton btnReinit = new JButton("Réinitialiser");
+		btnReinit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				module.reinitTxtField(txtDep, lblMsgError);
+				txtDep.requestFocus();
+			}
+		});
 		btnReinit.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		btnReinit.setBounds(410, 30, 125, 18);
 		contentPane.add(btnReinit);
@@ -146,10 +158,10 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 		lblAffichage.setBounds(120, 368, 400, 30);
 		contentPane.add(lblAffichage);
 		
-		JLabel lblMsgError = new JLabel("Erreur : ");
-		lblMsgError.setForeground(Color.RED);
+		lblMsgError = new JLabel("Erreur : ");
 		lblMsgError.setVisible(false);
-		lblMsgError.setBounds(50, 340, 550, 15);
+		lblMsgError.setForeground(Color.RED);
+		lblMsgError.setBounds(50, 340, 550, 40);
 		contentPane.add(lblMsgError);
 	}
 }
