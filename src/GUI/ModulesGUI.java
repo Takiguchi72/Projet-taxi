@@ -1,5 +1,7 @@
 package GUI;
 
+import java.awt.Color;
+import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -77,9 +79,10 @@ public class ModulesGUI {
 	 * @param label
 	 * @return
 	 */
-	public int checkDep(JTextField field, JLabel label){
+	public int checkSaisie(JTextField field, JLabel label){
         OK = false;
         int nb = 0;
+        System.out.println("bob :" + field.getName());
         //On essaye de caster la saisie en entier, et OK = vrai, sinon, on lève une exception et on affiche un message d'erreur
         try{
             nb = Integer.parseInt(field.getText());
@@ -93,10 +96,18 @@ public class ModulesGUI {
             	throw new Exception("\"" + falseNb + "\" is not a natural integer !");
             }//Fin if(nb < 0)
         } catch (Exception ex) {
-        	//Modification du texte de la zone d'erreur
-            label.setText("<html>Erreur : Le numéro de département saisi est incorrect : <br />" + ex.getMessage() + "</html>");
-            //La zone d'erreur est rendue visible
-            label.setVisible(true);
+        	String whatIsFalse = null;
+        	switch (field.getName())
+        	{
+        	case "txtDep" :	whatIsFalse = "Le numéro de département saisi est incorrect";
+        		break;
+        	case "txtKm" : whatIsFalse = "La distance saisie est incorrecte";
+        		break;
+        	default : whatIsFalse = "La durée saisie est incorrecte";
+        		break;
+        	}
+        	//Modification du texte et affichage de la zone d'erreur
+        	afficherErreur(label, whatIsFalse + " : <br />" + ex.getMessage(), 1);
             //On vide la zone de texte
             field.setText("");
             //On place le focus dans la zone de texte
@@ -175,4 +186,25 @@ public class ModulesGUI {
 			System.out.println("Failed to make connection!");
 		}//Fin else
 	}//Fin Saisie initSaisie()
-}
+	
+	/**
+	 * Affiche le JLabel lblMsgError et modifie son texte gràce au 1er paramètre et change de couleur en fonction du 2ème
+	 * @param Le message d'erreur à afficher [chaîne de caractères]
+	 * @param Le niveau de l'erreur ; 0:Error (red); 1:Warning (orange)
+	 */
+	private void afficherErreur(JLabel label, String message, int niveauDErreur)
+	{
+		switch (niveauDErreur)
+		{
+		case 1: label.setForeground(Color.RED);
+		label.setText("<html>Error : " + message + "</html>");
+			break;
+		case 2:	label.setForeground(new Color(230, 168, 17));	//couleur orange-foncé
+		label.setText("<html>Warning : " + message + "</html>");
+			break;
+		default : label.setForeground(Color.RED);
+			break;
+		}//fin switch()
+		label.setVisible(true);
+	}//fin afficherErreur()
+}//Fin ModuleGUI
