@@ -1,7 +1,6 @@
 package GUI;
 
 import java.awt.Color;
-import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -82,30 +81,37 @@ public class ModulesGUI {
 	public int checkSaisie(JTextField field, JLabel label){
         OK = false;
         int nb = 0;
-        System.out.println("bob :" + field.getName());
-        //On essaye de caster la saisie en entier, et OK = vrai, sinon, on lève une exception et on affiche un message d'erreur
         try{
-            nb = Integer.parseInt(field.getText());
-            //Si nb est inférieur à zéro, on lève une exception
-            if(nb < 0)
+        	//si le champ est null, on lève une exception
+        	if(field.getText().isEmpty() == true)
             {
-            	//on créer une variable temporaire pour l'afficher dans l'exception
-            	int falseNb = nb;
-            	//et on met nb à 0, sinon la zone de texte sera "Disabled"
-            	nb = 0;
-            	throw new Exception("\"" + falseNb + "\" is not a natural integer !");
-            }//Fin if(nb < 0)
+            	throw new Exception("The field is empty !");
+            }//fin if
+        	else
+        	{
+        		//On essaye de caster la saisie en entier, et OK = vrai, sinon, on lève une exception et on affiche un message d'erreur
+        		nb = Integer.parseInt(field.getText());
+                //Si nb est inférieur à zéro, on lève une exception
+                if(nb < 0)
+                {
+                	//on créer une variable temporaire pour l'afficher dans l'exception
+                	int falseNb = nb;
+                	//et on met nb à 0, sinon la zone de texte sera "Disabled"
+                	nb = 0;
+                	throw new Exception("\"" + falseNb + "\" is not a natural integer !");
+                }//Fin if(nb < 0)
+        	}//Fin else
         } catch (Exception ex) {
-        	String whatIsFalse = null;
+        	String whatIsFalse = null;	
         	switch (field.getName())
         	{
-        	case "txtDep" :	whatIsFalse = "Le numéro de département saisi est incorrect";
-        		break;
-        	case "txtKm" : whatIsFalse = "La distance saisie est incorrecte";
-        		break;
-        	default : whatIsFalse = "La durée saisie est incorrecte";
-        		break;
-        	}
+	        	case "txtDep" :	whatIsFalse = "Le numéro de département saisi est incorrect";
+	        		break;
+	        	case "txtKm" : whatIsFalse = "La distance saisie est incorrecte";
+	        		break;
+	        	default : whatIsFalse = "La durée saisie est incorrecte";
+	        		break;
+        	}//fin switch()
         	//Modification du texte et affichage de la zone d'erreur
         	afficherErreur(label, whatIsFalse + " : <br />" + ex.getMessage(), 1);
             //On vide la zone de texte
@@ -207,4 +213,96 @@ public class ModulesGUI {
 		}//fin switch()
 		label.setVisible(true);
 	}//fin afficherErreur()
+	
+	/**
+	 * Calcule le montant à payer et le retourne
+	 * @return Le montant à payer [réel]
+	 */
+	public double calculPrix()
+	{
+		if(saisies[2] < 60)
+		{
+			return (brochure.getListeTarifs().get(check_indice_dep(saisies[0])).getPriseEnCharge() + saisies[1] * check_tarif_km(saisies[0], saisies[3]));
+		}//fin if
+		else
+		{
+			return (brochure.getListeTarifs().get(check_indice_dep(saisies[0])).getPriseEnCharge() + saisies[1] * check_tarif_km(saisies[0], saisies[3]) + ((saisies[2] - (saisies[2] % 60))/60) * check_tarif_jn(saisies[0], saisies[3]));
+		}//fin else
+	}//fin calculPrix()
+	
+	/**
+	 * Retourne l'indice du tarif de la brochure, ayant pour numéro de département, le numéro saisi en paramètre
+	 * @param Le numéro du département que l'on cherche dans la brochure [entier]
+	 * @return L'indice du tarif ayant pour numéro de département celui passé en paramètre [entier]
+	 */
+	private int check_indice_dep(int num_dep)
+    {
+    	OK = false;
+    	i = 0;
+    	//Tant que i est inférieur ou égal à l'indice max et que le booleen est à faux (donc on n'a pas trouvé le département)
+    	while (i < brochure.getListeTarifs().size() && OK == false)
+    	{
+    		//Si le num_dep correspond au tarif à l'indice i de la brochure,
+    		if (num_dep == brochure.getListeTarifs().get(i).getDepartement())
+    		{
+    			OK = true;
+    		}//fin if
+    		else
+    		{
+    			OK = false;
+    			i++;
+    		}//fin else
+    	}//Fin while
+    	//On retourne la valeur de i qui correspondra à l'indice du tarif de la brochure, qui aura pour departement celui passé en paramètre
+    	return i;
+    }//Fin check_indice_dep()
+	
+	/**
+	 * Retourne un montant correspondant au tarif ayant pour département la valeur du paramètre "dep", en fonction d'un moment, passé en paramètre
+	 * @param Le numéro de département, permettant de récupérer le tarif d'un Tarif de la brochure [entier]
+	 * @param L'indice du moment dans la liste de moments [entier]
+	 * @return Le montant correspondant au tarif ayant pour département la valeur de "dep", en fonction de l'indice "moment"
+	 */
+	private double check_tarif_km(int dep, int moment)
+    {
+    	double valeur = 0;
+    	//En fonction du moment passé en paramètre, on va renvoyer un des montants du Tarif correspondant au numéro de département saisi en paramère
+    	//Note : On est obligé de mettre le montant dans une variable locale, car si on fait des "return", on ne peut exécuter l'instruction "break"
+    	switch (moment)
+    	{
+	    	case 0:
+	    		valeur = brochure.getListeTarifs().get(check_indice_dep(dep)).getKmAlleSimpleJSem();
+	    		break;
+	    	case 1:
+	    		valeur = brochure.getListeTarifs().get(check_indice_dep(dep)).getKmAlleRetourJSem();
+	    		break;
+	    	case 2:
+	    		valeur = brochure.getListeTarifs().get(check_indice_dep(dep)).getKmAlleSimpleNuitDim();
+	    		break;
+	    	default:
+	    		valeur = brochure.getListeTarifs().get(check_indice_dep(dep)).getKmAlleRetourNuitDim();
+	    		break;
+    	}//Fin switch (moment)
+    	return valeur;
+    }//fin check_tarif_km()
+	
+	/**
+	 * Retourne le tarif horaire correspondant au tarif ayant pour département la valeur du paramètre "dep"
+	 * @param Le numéro de département, permettant de récupérer le tarif d'un Tarif de la brochure [entier]
+	 * @param L'indice du moment dans la liste de moments [entier]
+	 * @return Le montant du tarif horaire au tarif ayant pour département la valeur de "dep"
+	 */
+	private double check_tarif_jn(int dep, int moment)
+    {
+    	//Si moment == {0;1} alors on retourne le tarif horaire de jour
+    	if (moment == 0 || moment == 1)
+    	{
+    		return brochure.getListeTarifs().get(check_indice_dep(dep)).getTarifHoraireJSem();
+    	}//fin if
+    	//Sinon, on retourne le tarif horaire de nuit
+    	else
+    	{
+    		return brochure.getListeTarifs().get(check_indice_dep(dep)).getTarifHoraireNuitDim();
+    	}//fin else
+    }//Fin check_tarif_jn()
 }//Fin ModuleGUI
