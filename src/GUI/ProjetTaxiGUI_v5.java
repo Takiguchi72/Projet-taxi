@@ -14,6 +14,10 @@ import javax.swing.ButtonGroup;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import java.text.NumberFormat;
 
 public class ProjetTaxiGUI_v5 extends JFrame {
 
@@ -32,6 +36,13 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 	private JLabel lblAffichage;
 	private final ButtonGroup radioButton = new ButtonGroup();
 	private final ModulesGUI module = new ModulesGUI();
+	private JMenu menuAdmin;
+	private JMenuItem mntmAjouterUnTarif;
+	private JMenuItem mntmModifierUnTarif;
+	private JMenuItem mntmSupprimerUnTarif;
+	private JPanel panelCalcul;
+	private JMenu menuCalculer;
+	private JMenuItem miUneCourse;
 
 	/**
 	 * Launch the application.
@@ -59,27 +70,72 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 		setLocationByPlatform(true);
 		setTitle("Projet Taxi");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 650, 450);
+		setBounds(100, 100, 648, 459);
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		JMenu menuFichier = new JMenu("Fichier");
+		menuBar.add(menuFichier);
+		
+		JMenuItem miQuit = new JMenuItem("Quitter");
+		miQuit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
+		menuFichier.add(miQuit);
+		
+		menuAdmin = new JMenu("Administration");
+		menuBar.add(menuAdmin);
+		
+		mntmAjouterUnTarif = new JMenuItem("Ajouter un tarif");
+		menuAdmin.add(mntmAjouterUnTarif);
+		
+		mntmModifierUnTarif = new JMenuItem("Modifier un tarif");
+		menuAdmin.add(mntmModifierUnTarif);
+		
+		mntmSupprimerUnTarif = new JMenuItem("Supprimer un tarif");
+		menuAdmin.add(mntmSupprimerUnTarif);
+		
+		menuCalculer = new JMenu("Calculer");
+		menuBar.add(menuCalculer);
+		
+		miUneCourse = new JMenuItem("Une course");
+		miUneCourse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				panelCalcul.setVisible(true);
+			}
+		});
+		menuCalculer.add(miUneCourse);
 		contentPane = new JPanel();
 		contentPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
+		panelCalcul = new JPanel();
+		panelCalcul.setVisible(false);
+		panelCalcul.setBounds(12, 12, 624, 378);
+		contentPane.add(panelCalcul);
+		panelCalcul.setLayout(null);
+		
 		JLabel lblDep = new JLabel("Département :");
+		lblDep.setBounds(30, 30, 110, 15);
+		panelCalcul.add(lblDep);
 		lblDep.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		lblDep.setPreferredSize(new Dimension(100, 15));
-		lblDep.setBounds(50, 30, 113, 15);
-		contentPane.add(lblDep);
 		
 		txtDep = new JTextField();
+		txtDep.setBounds(150, 30, 50, 19);
+		panelCalcul.add(txtDep);
 		txtDep.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		txtDep.setBounds(230, 30, 49, 19);
-		contentPane.add(txtDep);
 		txtDep.setColumns(2);
 		txtDep.setName("txtDep");
 		
 		JButton btnSuivant = new JButton("Suivant");
+		btnSuivant.setBounds(230, 30, 90, 18);
+		panelCalcul.add(btnSuivant);
 		btnSuivant.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//On effectue un controle de saisie sur la valeur entrée dans la zone de texte
@@ -102,10 +158,10 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 			}
 		});
 		btnSuivant.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		btnSuivant.setBounds(300, 30, 93, 18);
-		contentPane.add(btnSuivant);
 		
 		JButton btnReinit = new JButton("Réinitialiser");
+		btnReinit.setBounds(350, 30, 125, 18);
+		panelCalcul.add(btnReinit);
 		btnReinit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//On vide les zones de saisie
@@ -113,88 +169,87 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 			}
 		});
 		btnReinit.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		btnReinit.setBounds(410, 30, 125, 18);
-		contentPane.add(btnReinit);
 		
 		lblKm = new JLabel("Nombre de kilomètres :");
+		lblKm.setBounds(30, 80, 165, 15);
+		panelCalcul.add(lblKm);
 		lblKm.setVisible(false);
 		lblKm.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		lblKm.setPreferredSize(new Dimension(160, 15));
-		lblKm.setBounds(50, 70, 165, 15);
-		contentPane.add(lblKm);
 		
 		txtKm = new JTextField();
+		txtKm.setBounds(225, 80, 50, 19);
+		panelCalcul.add(txtKm);
 		txtKm.setVisible(false);
 		txtKm.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		txtKm.setBounds(230, 70, 114, 19);
-		contentPane.add(txtKm);
 		txtKm.setColumns(10);
 		txtKm.setName("txtKm");
 		
 		lblDuree = new JLabel("Durée (en min) :");
+		lblDuree.setBounds(30, 120, 126, 15);
+		panelCalcul.add(lblDuree);
 		lblDuree.setVisible(false);
 		lblDuree.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		lblDuree.setPreferredSize(new Dimension(160, 15));
-		lblDuree.setBounds(50, 110, 126, 15);
-		contentPane.add(lblDuree);
 		
 		txtDuree = new JTextField();
+		txtDuree.setBounds(225, 120, 50, 19);
+		panelCalcul.add(txtDuree);
 		txtDuree.setVisible(false);
 		txtDuree.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		txtDuree.setBounds(230, 110, 114, 19);
-		contentPane.add(txtDuree);
 		txtDuree.setColumns(10);
 		txtDuree.setName("txtDuree");
 		
 		btnRadASSem = new JRadioButton("Allé simple - Semaine");
+		btnRadASSem.setBounds(35, 150, 181, 23);
+		panelCalcul.add(btnRadASSem);
 		btnRadASSem.setVisible(false);
 		btnRadASSem.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		radioButton.add(btnRadASSem);
-		btnRadASSem.setBounds(45, 150, 181, 23);
-		contentPane.add(btnRadASSem);
 		
 		btnRadARSem = new JRadioButton("Allé retour - Semaine");
+		btnRadARSem.setBounds(35, 180, 180, 23);
+		panelCalcul.add(btnRadARSem);
 		btnRadARSem.setVisible(false);
 		btnRadARSem.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		radioButton.add(btnRadARSem);
-		btnRadARSem.setBounds(45, 180, 180, 23);
-		contentPane.add(btnRadARSem);
 		
 		btnRadASNuitDim = new JRadioButton("Allé simple - Nuit/Dimanche");
+		btnRadASNuitDim.setBounds(35, 210, 220, 23);
+		panelCalcul.add(btnRadASNuitDim);
 		btnRadASNuitDim.setVisible(false);
 		btnRadASNuitDim.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		radioButton.add(btnRadASNuitDim);
-		btnRadASNuitDim.setBounds(45, 210, 220, 23);
-		contentPane.add(btnRadASNuitDim);
 		
 		btnRadARNuitDim = new JRadioButton("Allé retour - Nuit/Dim");
+		btnRadARNuitDim.setBounds(35, 240, 220, 23);
+		panelCalcul.add(btnRadARNuitDim);
 		btnRadARNuitDim.setVisible(false);
 		btnRadARNuitDim.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		radioButton.add(btnRadARNuitDim);
-		btnRadARNuitDim.setBounds(45, 240, 220, 23);
-		contentPane.add(btnRadARNuitDim);
 		
 		btnCalculer = new JButton("Calculer");
+		btnCalculer.setBounds(423, 279, 117, 25);
+		panelCalcul.add(btnCalculer);
+		
+		lblMsgError = new JLabel();
+		lblMsgError.setBounds(30, 271, 550, 40);
+		lblMsgError.setText("msgError");
+		panelCalcul.add(lblMsgError);
+		lblMsgError.setVisible(false);
+		lblMsgError.setForeground(Color.RED);
+		
+		lblAffichage = new JLabel("Test");
+		lblAffichage.setBounds(169, 316, 270, 30);
+		panelCalcul.add(lblAffichage);
+		lblAffichage.setVisible(false);
+		lblAffichage.setAlignmentX(Component.CENTER_ALIGNMENT);
 		btnCalculer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				calculerTotal();
 			}
 		});
 		btnCalculer.setVisible(false);
-		btnCalculer.setBounds(70, 300, 117, 25);
-		contentPane.add(btnCalculer);
-		
-		lblAffichage = new JLabel("Test");
-		lblAffichage.setVisible(false);
-		lblAffichage.setAlignmentX(Component.CENTER_ALIGNMENT);
-		lblAffichage.setBounds(120, 368, 400, 30);
-		contentPane.add(lblAffichage);
-		
-		lblMsgError = new JLabel();
-		lblMsgError.setVisible(false);
-		lblMsgError.setForeground(Color.RED);
-		lblMsgError.setBounds(50, 340, 550, 40);
-		contentPane.add(lblMsgError);
 	}
 	
 	/**
@@ -333,7 +388,10 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 		if(module.getSaisies()[1] != 0 && module.getSaisies()[2] != 0)
 		{
 			effacerErreur();
-			lblAffichage.setText("Vous devez payer " + module.calculPrix() + " euros.");
+			//Création d'un objet permettant d'arrondir le montant
+			NumberFormat format = NumberFormat.getInstance();
+	        format.setMinimumFractionDigits(2);
+			lblAffichage.setText("Vous devez payer " + format.format(module.calculPrix()) + " euros.");
 			lblAffichage.setVisible(true);
 		}//fin if
 	}//fin checkBeforeCalcul()
