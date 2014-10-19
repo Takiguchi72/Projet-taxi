@@ -18,6 +18,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.text.NumberFormat;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
+import javax.swing.JList;
+import javax.swing.JComboBox;
+import javax.swing.JLayeredPane;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JTextPane;
+import javax.swing.border.LineBorder;
 
 public class ProjetTaxiGUI_v5 extends JFrame {
 
@@ -43,6 +51,15 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 	private JPanel panelCalcul;
 	private JMenu menuCalculer;
 	private JMenuItem miUneCourse;
+	private JPanel panelAddTarif;
+	private JTextField pATtxtDep;
+	private JTextField pATtxtPriseChg;
+	private JTextField pATtxtASJour;
+	private JTextField pATtxtARJour;
+	private JTextField pATtxtASNuitDim;
+	private JTextField pATtxtARNuitDim;
+	private JTextField pATtxtHorJour;
+	private JTextField pATtxtHorNuitDim;
 
 	/**
 	 * Launch the application.
@@ -54,7 +71,6 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 					ProjetTaxiGUI_v5 frame = new ProjetTaxiGUI_v5();
 					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
-					frame.txtDep.requestFocus();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -70,7 +86,7 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 		setLocationByPlatform(true);
 		setTitle("Projet Taxi");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 648, 459);
+		setBounds(100, 100, 651, 459);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -104,7 +120,14 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 		miUneCourse = new JMenuItem("Une course");
 		miUneCourse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				panelCalcul.setVisible(true);
+				
+				if(panelCalcul.isVisible() == true){
+					panelCalcul.setVisible(false);
+				}//fin if
+				else
+				{
+					panelCalcul.setVisible(true);
+				}
 			}
 		});
 		menuCalculer.add(miUneCourse);
@@ -116,9 +139,131 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 		
 		panelCalcul = new JPanel();
 		panelCalcul.setVisible(false);
-		panelCalcul.setBounds(12, 12, 624, 378);
-		contentPane.add(panelCalcul);
-		panelCalcul.setLayout(null);
+		
+		panelAddTarif = new JPanel();
+		panelAddTarif.setBounds(12, 12, 624, 378);
+		contentPane.add(panelAddTarif);
+		panelAddTarif.setLayout(null);
+		
+		JLabel pATlblDep = new JLabel("Département :");
+		pATlblDep.setBounds(60, 30, 120, 15);
+		panelAddTarif.add(pATlblDep);
+		
+		pATtxtDep = new JTextField();
+		pATtxtDep.setBounds(210, 30, 50, 19);
+		panelAddTarif.add(pATtxtDep);
+		pATtxtDep.setColumns(10);
+		
+		JLabel pATlblPriseChg = new JLabel("Prise en charge :");
+		pATlblPriseChg.setBounds(60, 60, 120, 15);
+		panelAddTarif.add(pATlblPriseChg);
+		
+		pATtxtPriseChg = new JTextField();
+		pATtxtPriseChg.setBounds(210, 60, 50, 19);
+		panelAddTarif.add(pATtxtPriseChg);
+		pATtxtPriseChg.setColumns(10);
+		
+		JSeparator pATseparator1 = new JSeparator();
+		pATseparator1.setBounds(40, 95, 315, 15);
+		panelAddTarif.add(pATseparator1);
+		
+		JLabel pATlblASJour = new JLabel("Tarif au km AS jour Semaine :");
+		pATlblASJour.setBounds(30, 110, 210, 15);
+		panelAddTarif.add(pATlblASJour);
+		
+		pATtxtASJour = new JTextField();
+		pATtxtASJour.setBounds(268, 110, 70, 19);
+		panelAddTarif.add(pATtxtASJour);
+		pATtxtASJour.setColumns(10);
+		
+		JLabel pATlblARJour = new JLabel("Tarif au km AR jour Semaine :");
+		pATlblARJour.setBounds(30, 140, 210, 15);
+		panelAddTarif.add(pATlblARJour);
+		
+		pATtxtARJour = new JTextField();
+		pATtxtARJour.setBounds(268, 140, 70, 19);
+		panelAddTarif.add(pATtxtARJour);
+		pATtxtARJour.setColumns(10);
+		
+		JLabel pATlblASNuitDim = new JLabel("Tarif au km AS nuit Dimanche :");
+		pATlblASNuitDim.setBounds(30, 170, 220, 15);
+		panelAddTarif.add(pATlblASNuitDim);
+		
+		pATtxtASNuitDim = new JTextField();
+		pATtxtASNuitDim.setBounds(268, 170, 70, 19);
+		panelAddTarif.add(pATtxtASNuitDim);
+		pATtxtASNuitDim.setColumns(10);
+		
+		JLabel pATlblARNuitDim = new JLabel("Tarif au km AR nuit Dimanche :");
+		pATlblARNuitDim.setBounds(30, 200, 220, 15);
+		panelAddTarif.add(pATlblARNuitDim);
+		
+		pATtxtARNuitDim = new JTextField();
+		pATtxtARNuitDim.setBounds(268, 200, 70, 19);
+		panelAddTarif.add(pATtxtARNuitDim);
+		pATtxtARNuitDim.setColumns(10);
+		
+		JSeparator pATseparator2 = new JSeparator();
+		pATseparator2.setBounds(40, 235, 315, 2);
+		panelAddTarif.add(pATseparator2);
+		
+		JLabel pATlblHorJour = new JLabel("Tarif horaire jour Semaine :");
+		pATlblHorJour.setBounds(30, 250, 210, 15);
+		panelAddTarif.add(pATlblHorJour);
+		
+		pATtxtHorJour = new JTextField();
+		pATtxtHorJour.setBounds(268, 250, 70, 19);
+		panelAddTarif.add(pATtxtHorJour);
+		pATtxtHorJour.setColumns(10);
+		
+		JLabel pATlblHorNuitDim = new JLabel("Tarif horaire nuit Dimanche :");
+		pATlblHorNuitDim.setBounds(30, 280, 210, 15);
+		panelAddTarif.add(pATlblHorNuitDim);
+		
+		pATtxtHorNuitDim = new JTextField();
+		pATtxtHorNuitDim.setBounds(268, 280, 70, 19);
+		panelAddTarif.add(pATtxtHorNuitDim);
+		pATtxtHorNuitDim.setColumns(10);
+		
+		JLabel pATlblMsgError = new JLabel("Label d'erreurs");
+		pATlblMsgError.setVisible(false);
+		pATlblMsgError.setHorizontalAlignment(SwingConstants.LEFT);
+		pATlblMsgError.setForeground(Color.RED);
+		pATlblMsgError.setBounds(45, 300, 550, 25);
+		panelAddTarif.add(pATlblMsgError);
+		
+		JLabel pATlblAffichage = new JLabel("Label d'affichage");
+		pATlblAffichage.setVisible(false);
+		pATlblAffichage.setHorizontalAlignment(SwingConstants.CENTER);
+		pATlblAffichage.setBounds(134, 347, 350, 19);
+		panelAddTarif.add(pATlblAffichage);
+		
+		JLabel pATlblTitle = new JLabel("Ajout d'un nouveau tarif");
+		pATlblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		pATlblTitle.setBounds(215, 0, 180, 15);
+		panelAddTarif.add(pATlblTitle);
+		
+		JButton pATbtnSave = new JButton("Enregistrer");
+		pATbtnSave.setBounds(420, 263, 117, 25);
+		panelAddTarif.add(pATbtnSave);
+		
+		JLayeredPane layeredPane = new JLayeredPane();
+		layeredPane.setBorder(new LineBorder(new Color(0, 0, 0)));
+		layeredPane.setForeground(Color.LIGHT_GRAY);
+		layeredPane.setBounds(396, 30, 200, 100);
+		panelAddTarif.add(layeredPane);
+		
+		JComboBox pATcbbListT = new JComboBox();
+		pATcbbListT.setBounds(75, 65, 50, 19);
+		layeredPane.add(pATcbbListT);
+		
+		JLabel pATlblListDep = new JLabel("<html>Liste des départements<br /> pris en charge :</html>");
+		pATlblListDep.setBounds(0, 20, 200, 30);
+		layeredPane.add(pATlblListDep);
+		pATlblListDep.setHorizontalAlignment(SwingConstants.CENTER);
+		panelAddTarif.setBounds(12, 12, 624, 378);
+		contentPane.add(panelAddTarif);
+		panelAddTarif.setLayout(null);
 		
 		JLabel lblDep = new JLabel("Département :");
 		lblDep.setBounds(30, 30, 110, 15);
@@ -234,12 +379,12 @@ public class ProjetTaxiGUI_v5 extends JFrame {
 		
 		lblMsgError = new JLabel();
 		lblMsgError.setBounds(30, 271, 550, 40);
-		lblMsgError.setText("msgError");
+		lblMsgError.setText("Label d'erreurs");
 		panelCalcul.add(lblMsgError);
 		lblMsgError.setVisible(false);
 		lblMsgError.setForeground(Color.RED);
 		
-		lblAffichage = new JLabel("Test");
+		lblAffichage = new JLabel("Label d'affichage");
 		lblAffichage.setBounds(169, 316, 270, 30);
 		panelCalcul.add(lblAffichage);
 		lblAffichage.setVisible(false);

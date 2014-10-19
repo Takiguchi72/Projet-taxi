@@ -143,13 +143,13 @@ public class ModulesGUI {
     	Connection connection = null;
     	//Récupération des données de connexion
 		MotDePasse login = new MotDePasse();
-    	//On essaie d'ouvrir la connexion
+    	/*On essaie d'ouvrir la connexion
     	try{
     		//Connexion à la basse
     		connection = DriverManager.getConnection("jdbc:postgresql://172.16.99.2:5432/fthierry", login.getLogin(), login.getMdp());
     	} catch (Exception e) {
     		System.out.println("Erreur lors de la connexion à la base de donnée locale :\n" + e);
-    	}//Fin catch
+    	}//Fin catch*/
     	
     	//Si l'on a pas réussi à se connecter à la bdd, on essaye sur une autre
     	if(connection == null)
@@ -174,7 +174,14 @@ public class ModulesGUI {
     			while(curseurResultat.next())
     			{
     				//On ajoute un Tarif dans la liste de tarifs de la brochure de l'objet de classe Saisie
-    				brochure.AddTarif(new Tarif(Integer.parseInt(curseurResultat.getString("departement")),Double.parseDouble(curseurResultat.getString("priseencharge")),Double.parseDouble(curseurResultat.getString("kmarjoursem")),Double.parseDouble(curseurResultat.getString("kmallejoursem")),Double.parseDouble(curseurResultat.getString("kmarnuitdim")),Double.parseDouble(curseurResultat.getString("kmallenuitdim")),Double.parseDouble(curseurResultat.getString("tarifhjsem")),Double.parseDouble(curseurResultat.getString("tarifhnuitd"))));
+    				brochure.AddTarif(new Tarif(Integer.parseInt(curseurResultat.getString("departement")),
+    											Double.parseDouble(curseurResultat.getString("priseencharge")),
+    											Double.parseDouble(curseurResultat.getString("kmarjoursem")),
+    											Double.parseDouble(curseurResultat.getString("kmallejoursem")),
+    											Double.parseDouble(curseurResultat.getString("kmarnuitdim")),
+    											Double.parseDouble(curseurResultat.getString("kmallenuitdim")),
+    											Double.parseDouble(curseurResultat.getString("tarifhjsem")),
+    											Double.parseDouble(curseurResultat.getString("tarifhnuitd"))));
     			}//fin for
     		} catch (Exception e){
     			System.out.println("Erreur : " + e.getMessage());
