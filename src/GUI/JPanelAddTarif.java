@@ -1,24 +1,20 @@
 package GUI;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
-
 import Program.Brochure;
+import Program.DonneesConnexion;
 import Program.Tarif;
 
 public class JPanelAddTarif extends JPanel{
@@ -32,7 +28,9 @@ public class JPanelAddTarif extends JPanel{
 	private JTextField txtHorJour;
 	private JTextField txtHorNuitDim;
 	private JLabel lblMsgError;
+	private JLabel lblAffichage;
 	private JButton btnSave;
+	private JButton btnRedo;
 	private List listeDepDispo;
 	private int saisieDep;
 	private double[] saisies;
@@ -234,7 +232,7 @@ public class JPanelAddTarif extends JPanel{
 		lblMsgError.setBounds(45, 325, 550, 45);
 		this.add(lblMsgError);
 		//Création du label d'affichage
-		JLabel lblAffichage = new JLabel("Label d'affichage");
+		lblAffichage = new JLabel("<html><center>Insertion réussie !</center></html>");
 		lblAffichage.setVisible(false);
 		lblAffichage.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAffichage.setBounds(134, 347, 350, 19);
@@ -246,11 +244,20 @@ public class JPanelAddTarif extends JPanel{
 		this.add(lblTitle);
 		//Création du boutton enregistrer
 		btnSave = new JButton("Enregistrer");
-		btnSave.setBounds(420, 263, 117, 25);
+		btnSave.setBounds(420, 280, 120, 25);
 		this.add(btnSave);
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				enregistrerTarif(JPanelAddTarif.this.brochure);
+			}
+		});
+		//Création du boutton Recommencer
+		btnRedo = new JButton("Recommencer");
+		btnRedo.setBounds(420, 280, 120, 25);
+		this.add(btnRedo);
+		btnRedo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//enregistrerTarif(JPanelAddTarif.this.brochure);
 			}
 		});
 		//Création du label liste de départements
@@ -311,7 +318,7 @@ public class JPanelAddTarif extends JPanel{
 	}//Fin initSaisiesAZero()
 	
 	/**
-	 * Vérifie que les zones de saisies sont correctement remplies
+	 * Vérifie que les zones de saisies sont correctement remplies, et "caste" la valeur des zones de saisies dans les variables de saisie
 	 */
 	private void checkSaisies(Brochure brochure) throws Exception
 	{
@@ -368,10 +375,15 @@ public class JPanelAddTarif extends JPanel{
 	public void enregistrerTarif(Brochure brochure)
 	{
 		try{
+			//On effectue les différents contrôles de saisies nécessaire avant l'insertion dans la bdd
 			checkSaisies(brochure);
-		}
-		catch (Exception ex)
-		{
+			//On insert si aucun exception n'est relevée
+			insertIntoTarif(saisieDep, saisies);
+			//On rend non modifiable les zones de saisies, et on cache le boutton "Enregistrer", puis on affiche le boutton "Effectuer un nouvel enregistrement"
+			setEnabledJTextFields(false);
+			//On met à jour la brochure, et on actualise la liste de départements disponibles si on veut refaire un ajout
+		} catch (Exception ex){
+			//En fonction de l'exception qui a été levée, on va modifier le niveau d'erreur
 			switch(ex.getCause().getMessage())
 			{
 			case "alreadyRegisted" : Modules.afficherErreur(lblMsgError, ex.getMessage(), 2);
@@ -383,4 +395,66 @@ public class JPanelAddTarif extends JPanel{
 			}//Fin switch()
 		}//Fin catch
 	}//Fin enregistrerTarif()
+	
+	/**
+	 * Effectue l'insertion du nouveau tarif et annonce la réussie ou l'echec
+	 * @param Le département à ajouter [entier]
+	 * @param Tablau de valeurs à ajouter au nouveau tarif [décimaux;Tableau]
+	 */
+	private void insertIntoTarif(int dep, double[] values)
+	{
+		try{
+			Connection connection = DriverManager.getConnection("jdbc:postgresql://" + DonneesConnexion.getAddress() + "/fthierry", DonneesConnexion.getLogin(), DonneesConnexion.getMdp());
+			//Création d'un objet de type Statement qui permettra d'effectuer des requêtes
+			PreparedStatement req = connection.prepareStatement("insert into \"taxi_project\".tarif values (?, ?, ?, ?, ?, ?, ?, ?)");
+			//On assigne des valeurs aux variables de la requête
+			req.setInt(1, dep);
+			for(int i = 2 ; i < 9 ; i++)
+			{
+				req.setDouble(i, values[i-2]);
+			}//fin for(int i = 1 ; i < 7 ; i++)
+			//On excécute l'insertion
+			req.executeUpdate();
+			connection.close();
+			//Afficher la réussite de l'insertion
+			lblAffichage.setVisible(true);
+		} catch (Exception ex) {
+			Modules.afficherErreur(lblMsgError, "insertion impossible :<br />" + ex.getMessage(), 1);
+		}//Fin catch()
+	}//Fin insertIntoTarif(int dep, double[] values)
+	
+	/**
+	 * Modifie l'élément "Enabled" des JTextField du JPannelAddTarif ainsi que la visibilité des deux bouttons
+	 * @param Si value vaut "True" : L'élément "Enabled" des JTextField passe à vrai, le boutton "Enregistrer" devient visible et le boutton "Recommencer" devient invisible
+	 * @param si value vaut "False" : L'élément "Enabled" des JTextField passe à faux, le boutton "Enregistrer" devient invisible et le boutton "Recommencer" devient visible
+	 */
+	private void setEnabledJTextFields(Boolean value)
+	{
+		if(value == true)
+		{
+			txtDep.setEnabled(true);
+			txtPriseChg.setEnabled(true);
+			txtASJour.setEnabled(true);
+			txtARJour.setEnabled(true);
+			txtASNuitDim.setEnabled(true);
+			txtARNuitDim.setEnabled(true);
+			txtHorJour.setEnabled(true);
+			txtHorNuitDim.setEnabled(true);
+			btnSave.setVisible(true);
+			btnRedo.setVisible(false);
+		}//Fin if(value == true)
+		else
+		{
+			txtDep.setEnabled(false);
+			txtPriseChg.setEnabled(false);
+			txtASJour.setEnabled(false);
+			txtARJour.setEnabled(false);
+			txtASNuitDim.setEnabled(false);
+			txtARNuitDim.setEnabled(false);
+			txtHorJour.setEnabled(false);
+			txtHorNuitDim.setEnabled(false);
+			btnSave.setVisible(false);
+			btnRedo.setVisible(true);
+		}//Fin else
+	}//Fin setEnabledJTextFields(Boolean value)
 }
