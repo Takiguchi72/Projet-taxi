@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,12 +36,6 @@ public class JPanelAddTarif extends JPanel{
 	private List listeDepDispo;
 	private int saisieDep;
 	private double[] saisies;
-	private int enregistrementEffectue;
-	
-	public int getEnregistrementEffectue()
-	{
-		return enregistrementEffectue;
-	}
 	
 	//***************************//
 	// C O N S T R U C T E U R S //
@@ -49,12 +45,12 @@ public class JPanelAddTarif extends JPanel{
 	 * Constructeur de la classe panelAddTarif
 	 * @param La brochure de tarifs [Brochure]
 	 */
-	public JPanelAddTarif(Brochure brochure)
+	public JPanelAddTarif()
 	{
 		//Initialisation du panel
 		super();
 		//Initialisation de la brochure
-		this.brochure = new Brochure("Taxi'n co", brochure.getListeTarifs());
+		this.brochure = new Brochure(Modules.initBrochure());
 		//Configuration du panel
 		this.setBounds(12, 12, 624, 378);
 		this.setLayout(null);
@@ -170,16 +166,17 @@ public class JPanelAddTarif extends JPanel{
 		this.add(btnSave);
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				enregistrerTarif(JPanelAddTarif.this.brochure);
+				enregistrerTarif();
 			}
 		});
 		//Création du boutton Recommencer
 		btnRedo = new JButton("Recommencer");
-		btnRedo.setBounds(420, 280, 120, 25);
+		btnRedo.setBounds(410, 280, 140, 25);
 		this.add(btnRedo);
+		btnRedo.setVisible(false);
 		btnRedo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//enregistrerTarif(JPanelAddTarif.this.brochure);
+				reinitJPanelAddTarif();
 			}
 		});
 		//Création du label liste de départements
@@ -189,11 +186,10 @@ public class JPanelAddTarif extends JPanel{
 		//Création de la List de départements pris en charge
 		listeDepDispo = new List();
 		listeDepDispo.setBounds(470, 90, 50, 72);
-		initListeDep(brochure);
+		initListeDep();
 		this.add(listeDepDispo);
 		//Déclaration du tableau de saisies
 		initSaisiesAZero();
-		enregistrementEffectue = 0;
 	}//Fin JPanelAddTarif(Brochure brochure)
 	
 	//*****************//
@@ -204,7 +200,7 @@ public class JPanelAddTarif extends JPanel{
 	 * Initialise la List de départements à partir des Département des tarifs de la brochure
 	 * @param La brochure de tarif passé en paramètre lors de l'appel du constructeur [Brochure]
 	 */
-	private void initListeDep(Brochure brochure)
+	private void initListeDep()
 	{
 		//Pour i allant de 1 à 99,	
 		for(int i = 1 ; i < 100 ; i++)
@@ -243,10 +239,10 @@ public class JPanelAddTarif extends JPanel{
 	/**
 	 * Vérifie que les zones de saisies sont correctement remplies, et "caste" la valeur des zones de saisies dans les variables de saisie
 	 */
-	private void checkSaisies(Brochure brochure) throws Exception
+	private void checkSaisies() throws Exception
 	{
 		Modules.effacerErreur(lblMsgError);
-		saisieDep = checkDepInBrochure(txtDep, brochure);
+		saisieDep = checkDepInBrochure(txtDep);
 		saisies[0] = Modules.checkDoubleSaisie(txtPriseChg, lblMsgError);
 		saisies[1] = Modules.checkDoubleSaisie(txtASJour, lblMsgError);
 		saisies[2] = Modules.checkDoubleSaisie(txtARJour, lblMsgError);
@@ -262,7 +258,7 @@ public class JPanelAddTarif extends JPanel{
 	 * @param La brochure de tarifs où vérifier si le département y est présent [Brochure]
 	 * @return La saisie castée en entier naturel si elle n'est pas dans la brochure
 	 */
-	private int checkDepInBrochure(JTextField field, Brochure brochure) throws Exception
+	private int checkDepInBrochure(JTextField field) throws Exception
 	{
 		//On convertit la saisie en entier naturel
 		int nb = Modules.checkIntSaisie(txtDep, lblMsgError);
@@ -295,27 +291,25 @@ public class JPanelAddTarif extends JPanel{
 	 * Effectue les contrôles des saisies et enregistre le nouveau tarif dans la bdd s'il n'y a pas d'erreurs
 	 * @param La brochure [Brochure]
 	 */
-	public void enregistrerTarif(Brochure brochure)
+	public void enregistrerTarif()
 	{
 		try{
 			//On effectue les différents contrôles de saisies nécessaire avant l'insertion dans la bdd
-			checkSaisies(brochure);
+			checkSaisies();
 			//On insert si aucun exception n'est relevée
 			insertIntoTarif(saisieDep, saisies);
-			enregistrementEffectue = 1;
 			//On rend non modifiable les zones de saisies, et on cache le boutton "Enregistrer", puis on affiche le boutton "Effectuer un nouvel enregistrement"
 			setEnabledJTextFields(false);
-			//On met à jour la brochure, et on actualise la liste de départements disponibles si on veut refaire un ajout
 		} catch (Exception ex){
 			//En fonction de l'exception qui a été levée, on va modifier le niveau d'erreur
 			switch(ex.getCause().getMessage())
 			{
-			case "alreadyRegisted" : Modules.afficherErreur(lblMsgError, ex.getMessage(), 2);
-				break;
-			case "moreThan1Hundred" : Modules.afficherErreur(lblMsgError, ex.getMessage(), 2);
-				break;
-			default : Modules.afficherErreur(lblMsgError, ex.getMessage(), 1);
-				break;
+				case "alreadyRegisted" : Modules.afficherErreur(lblMsgError, ex.getMessage(), 2);
+					break;
+				case "moreThan1Hundred" : Modules.afficherErreur(lblMsgError, ex.getMessage(), 2);
+					break;
+				default : Modules.afficherErreur(lblMsgError, ex.getMessage(), 1);
+					break;
 			}//Fin switch()
 		}//Fin catch
 	}//Fin enregistrerTarif()
@@ -340,8 +334,6 @@ public class JPanelAddTarif extends JPanel{
 			//On excécute l'insertion
 			req.executeUpdate();
 			connection.close();
-			//Afficher la réussite de l'insertion
-			lblAffichage.setVisible(true);
 		} catch (Exception ex) {
 			Modules.afficherErreur(lblMsgError, "insertion impossible :<br />" + ex.getMessage(), 1);
 		}//Fin catch()
@@ -366,6 +358,7 @@ public class JPanelAddTarif extends JPanel{
 			txtHorNuitDim.setEnabled(true);
 			btnSave.setVisible(true);
 			btnRedo.setVisible(false);
+			lblAffichage.setVisible(false);
 		}//Fin if(value == true)
 		else
 		{
@@ -379,6 +372,38 @@ public class JPanelAddTarif extends JPanel{
 			txtHorNuitDim.setEnabled(false);
 			btnSave.setVisible(false);
 			btnRedo.setVisible(true);
+			lblAffichage.setVisible(true);
 		}//Fin else
 	}//Fin setEnabledJTextFields(Boolean value)
-}
+	
+	/**
+	 * Vide les zones de texte du panel
+	 */
+	private void clearJTextFields()
+	{
+		txtDep.setText("");
+		txtPriseChg.setText("");
+		txtASJour.setText("");
+		txtARJour.setText("");
+		txtASNuitDim.setText("");
+		txtARNuitDim.setText("");
+		txtHorJour.setText("");
+		txtHorNuitDim.setText("");
+	}
+	
+	/**
+	 * Réinitialise le JPanelAddTarif
+	 */
+	private void reinitJPanelAddTarif()
+	{
+		//Mise à jour de la brochure
+		brochure = new Brochure(Modules.initBrochure());
+		//Mise à jour de la liste des départements disponible
+		listeDepDispo.removeAll();
+		initListeDep();
+		//On réactive les éléments du panel
+		setEnabledJTextFields(true);
+		//On vide les zones de texte
+		clearJTextFields();
+	}
+}//Fin class

@@ -127,11 +127,11 @@ public class Modules{
 	/**
 	 * Initialise la brochure à partir de la base de données
 	 */
-	public static void initBrochure(Brochure brochure)
+	public static Brochure initBrochure()
 	{
-		brochure = new Brochure("Taxi'n co", new ArrayList<Tarif>());
+		Brochure brochure = new Brochure("Taxi'n co", new ArrayList<Tarif>());
 		Connection connection = getConnection();
-    		
+    	
     	//Si la connexion a été établie, on va effectuer des requêtes
     	if (connection != null)
     	{
@@ -169,6 +169,7 @@ public class Modules{
     	{
 			System.out.println("Failed to make connection!");
 		}//Fin else
+    	return brochure;
 	}//Fin Saisie initSaisie()
 	
 	public static Connection getPreparedConnection()
