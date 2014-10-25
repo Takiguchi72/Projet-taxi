@@ -130,7 +130,7 @@ public class Modules{
 	public static void initBrochure(Brochure brochure)
 	{
 		brochure = new Brochure("Taxi'n co", new ArrayList<Tarif>());
-		Connection connection = getPreparedConnection();
+		Connection connection = getConnection();
     		
     	//Si la connexion a été établie, on va effectuer des requêtes
     	if (connection != null)
@@ -191,4 +191,25 @@ public class Modules{
     	}//Fin catch
     	return connection;
 	}//Fin getPreparedConnection()
+	
+	public static Connection getConnection()
+	{
+		//Localisation du driver JDBC
+    	try{
+    		Class.forName("org.postgresql.Driver");
+    	} catch (Exception e) {
+    		System.out.println("Where is your PostgreSQL JDBC Driver? "
+					+ "Include in your library path!");
+			e.printStackTrace();
+    	}//Fin catch
+    	//Création d'un objet de type Connection
+    	Connection connection = null;
+    	try{
+    		//Connexion à la basse
+    		connection = DriverManager.getConnection("jdbc:postgresql://" + DonneesConnexion.getAddress() + "/fthierry", DonneesConnexion.getLogin(), DonneesConnexion.getMdp());
+    	} catch (Exception e) {
+    		System.out.println("Erreur lors de la connexion à la base de donnée :\n" + e);
+    	}//Fin catch
+    	return connection;
+	}
 }//Fin classe

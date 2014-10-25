@@ -34,89 +34,11 @@ public class JPanelAddTarif extends JPanel{
 	private List listeDepDispo;
 	private int saisieDep;
 	private double[] saisies;
+	private int enregistrementEffectue;
 	
-	//*****************************************//
-	// L I S T E   D E S   A C C E S S E U R S //
-	//*****************************************//
-	/**
-	 * Accesseur de la brochure
-	 * @return L'attribut brochure [Brochure]
-	 */
-	public Brochure getBrochure()
+	public int getEnregistrementEffectue()
 	{
-		return brochure;
-	}
-	
-	/**
-	 * Accesseur de txtDep
-	 * @return L'attribut txtDep [JTextField]
-	 */
-	public JTextField getTxtDep()
-	{
-		return txtDep;
-	}
-	
-	/**
-	 * Accesseur de txtPriseChg
-	 * @return L'attribut txtPriseChg [JTextField]
-	 */
-	public JTextField getTxtPriseChg()
-	{
-		return txtPriseChg;
-	}
-	
-	/**
-	 * Accesseur de txtASJour
-	 * @return L'attribut txtASJour [JTextField]
-	 */
-	public JTextField getTxtASJour()
-	{
-		return txtASJour;
-	}
-	
-	/**
-	 * Accesseur de txtARJour
-	 * @return L'attribut txtARJour [JTextField]
-	 */
-	public JTextField getTxtARJour()
-	{
-		return txtARJour;
-	}
-	
-	/**
-	 * Accesseur de txtASNuitDim
-	 * @return L'attribut txtASNuitDim [JTextField]
-	 */
-	public JTextField getTxtASNuitDim()
-	{
-		return txtASNuitDim;
-	}
-	
-	/**
-	 * Accesseur de txtARNuitDim
-	 * @return L'attribut txtARNuitDim [JTextField]
-	 */
-	public JTextField getTxtARNuitDim()
-	{
-		return txtARNuitDim;
-	}
-	
-	/**
-	 * Accesseur de txtHorJour
-	 * @return L'attribut txtHorJour [JTextField]
-	 */
-	public JTextField getTxtHorJour()
-	{
-		return txtHorJour;
-	}
-	
-	/**
-	 * Accesseur de txtHorNuitDim
-	 * @return L'attribut txtHorNuitDim [JTextField]
-	 */
-	public JTextField getTxtHorNuitDim()
-	{
-		return txtHorNuitDim;
+		return enregistrementEffectue;
 	}
 	
 	//***************************//
@@ -132,7 +54,7 @@ public class JPanelAddTarif extends JPanel{
 		//Initialisation du panel
 		super();
 		//Initialisation de la brochure
-		this.brochure = new Brochure("une brochure", brochure.getListeTarifs());
+		this.brochure = new Brochure("Taxi'n co", brochure.getListeTarifs());
 		//Configuration du panel
 		this.setBounds(12, 12, 624, 378);
 		this.setLayout(null);
@@ -271,6 +193,7 @@ public class JPanelAddTarif extends JPanel{
 		this.add(listeDepDispo);
 		//Déclaration du tableau de saisies
 		initSaisiesAZero();
+		enregistrementEffectue = 0;
 	}//Fin JPanelAddTarif(Brochure brochure)
 	
 	//*****************//
@@ -379,6 +302,7 @@ public class JPanelAddTarif extends JPanel{
 			checkSaisies(brochure);
 			//On insert si aucun exception n'est relevée
 			insertIntoTarif(saisieDep, saisies);
+			enregistrementEffectue = 1;
 			//On rend non modifiable les zones de saisies, et on cache le boutton "Enregistrer", puis on affiche le boutton "Effectuer un nouvel enregistrement"
 			setEnabledJTextFields(false);
 			//On met à jour la brochure, et on actualise la liste de départements disponibles si on veut refaire un ajout
