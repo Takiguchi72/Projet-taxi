@@ -16,19 +16,9 @@ public class ModulesGUI {
 	private int[] saisies = new int[4];
 	private Brochure brochure;
 	
-	/**
-	 * Constructeur par défaut de la classe Modules
-	 */
-	public ModulesGUI()
-	{
-		initBrochure();
-		OK = false;
-		i = 0;
-		saisies[0] = 0; //Correspond à la saisie du département
-		saisies[1] = 0; //Correspond à la saisie de la distance
-		saisies[2] = 0; //Correspond à la saisie de la durée
-		saisies[3] = 0; //Correspond à la saisie du moment
-	}//Fin Modules()
+	//***************************//
+	// G E T T E R / S E T T E R //
+	//***************************//
 	
 	/**
 	 * Modificateur de l'attribut saisies[]
@@ -44,10 +34,45 @@ public class ModulesGUI {
 		}//Fin if
 	}//Fin setSaisies()
 	
+	/**
+	 * Accesseur de l'attribut saisies[]
+	 * @return L'attribut saisies[] [entier:Tableau(4)]
+	 */
 	public int[] getSaisies()
 	{
 		return saisies;
 	}
+	
+	/**
+	 * Accesseur de l'attribut brochure
+	 * @return L'attribut brochure [Brochure]
+	 */
+	public Brochure getBrochure()
+	{
+		return brochure;
+	}
+	
+	//***************************//
+	// C O N S T R U C T E U R S //
+	//***************************//
+	
+	/**
+	 * Constructeur par défaut de la classe Modules
+	 */
+	public ModulesGUI()
+	{
+		initBrochure();
+		OK = false;
+		i = 0;
+		saisies[0] = 0; //Correspond à la saisie du département
+		saisies[1] = 0; //Correspond à la saisie de la distance
+		saisies[2] = 0; //Correspond à la saisie de la durée
+		saisies[3] = 0; //Correspond à la saisie du moment
+	}//Fin Modules()
+	
+	//*****************//
+	// M E T H O D E S //
+	//*****************//
 	
 	/**
 	 * Vérifie que le numéro passé en paramètre correspond au département d'un tarif de la brochure
@@ -102,8 +127,8 @@ public class ModulesGUI {
                 }//Fin if(nb < 0)
         	}//Fin else
         } catch (Exception ex) {
-        	String whatIsFalse = null;	
-        	switch (field.getName())
+        	String whatIsFalse = field.getName();	
+        	/*switch (field.getName())
         	{
 	        	case "txtDep" :	whatIsFalse = "Le numéro de département saisi est incorrect";
 	        		break;
@@ -111,7 +136,7 @@ public class ModulesGUI {
 	        		break;
 	        	default : whatIsFalse = "La durée saisie est incorrecte";
 	        		break;
-        	}//fin switch()
+        	}//fin switch()*/
         	//Modification du texte et affichage de la zone d'erreur
         	afficherErreur(label, whatIsFalse + " : <br />" + ex.getMessage(), 1);
             //On vide la zone de texte
@@ -141,27 +166,14 @@ public class ModulesGUI {
     	
     	//Création d'un objet de type Connection
     	Connection connection = null;
-    	//Récupération des données de connexion
-		MotDePasse login = new MotDePasse();
-    	/*On essaie d'ouvrir la connexion
+    	//On essaie d'ouvrir la connexion
     	try{
-    		//Connexion à la basse
-    		connection = DriverManager.getConnection("jdbc:postgresql://172.16.99.2:5432/fthierry", login.getLogin(), login.getMdp());
-    	} catch (Exception e) {
-    		System.out.println("Erreur lors de la connexion à la base de donnée locale :\n" + e);
-    	}//Fin catch*/
-    	
-    	//Si l'on a pas réussi à se connecter à la bdd, on essaye sur une autre
-    	if(connection == null)
-    	{
-    		try{
-        		//Connexion à la basse
-        		connection = DriverManager.getConnection("jdbc:postgresql://" + login.getAddress() + "/fthierry", login.getLogin(), login.getMdp());
-        	} catch (Exception e) {
-        		System.out.println("Erreur lors de la connexion à la base de donnée distante :\n" + e);
-        	}//Fin catch
-    	}//Fin if
-    		
+        	//Connexion à la basse
+        	connection = DriverManager.getConnection("jdbc:postgresql://" + DonneesConnexion.getAddress() + "/fthierry", DonneesConnexion.getLogin(), DonneesConnexion.getMdp());
+        } catch (Exception e) {
+        	System.out.println("Erreur lors de la connexion à la base de donnée distante :\n" + e);
+        }//Fin catch
+    	    		
     	//Si la connexion a été établie, on va effectuer des requêtes
     	if (connection != null)
     	{
@@ -205,7 +217,7 @@ public class ModulesGUI {
 	 * @param Le message d'erreur à afficher [chaîne de caractères]
 	 * @param Le niveau de l'erreur ; 0:Error (red); 1:Warning (orange)
 	 */
-	private void afficherErreur(JLabel label, String message, int niveauDErreur)
+	public void afficherErreur(JLabel label, String message, int niveauDErreur)
 	{
 		switch (niveauDErreur)
 		{
@@ -312,4 +324,6 @@ public class ModulesGUI {
     		return brochure.getListeTarifs().get(check_indice_dep(dep)).getTarifHoraireNuitDim();
     	}//fin else
     }//Fin check_tarif_jn()
+	
+	/**/
 }//Fin ModuleGUI

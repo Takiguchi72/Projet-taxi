@@ -32,10 +32,8 @@ public class Main {
     	Connection connection = null;
     	//On essaie d'ouvrir la connexion
     	try{
-    		//Récupération du mot de passe
-    		MotDePasse mdp = new MotDePasse();
     		//Connexion à la basse
-    		connection = DriverManager.getConnection("jdbc:postgresql://172.16.99.2:5432/fthierry", "f.thierry", mdp.getMdp());
+    		connection = DriverManager.getConnection("jdbc:postgresql://172.16.99.2:5432/fthierry", DonneesConnexion.getLogin(), DonneesConnexion.getMdp());
     	} catch (Exception e) {
     		System.out.println("Erreur lors de la connexion à la base de donnée :\n" + e);
     	}//Fin catch
