@@ -7,8 +7,6 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,7 +41,6 @@ public class JPanelAddTarif extends JPanel{
 	
 	/**
 	 * Constructeur de la classe panelAddTarif
-	 * @param La brochure de tarifs [Brochure]
 	 */
 	public JPanelAddTarif()
 	{
@@ -54,6 +51,11 @@ public class JPanelAddTarif extends JPanel{
 		//Configuration du panel
 		this.setBounds(12, 12, 624, 378);
 		this.setLayout(null);
+		//Création du label Titre
+		JLabel lblTitle = new JLabel("Ajout d'un nouveau tarif");
+		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitle.setBounds(215, 0, 180, 15);
+		this.add(lblTitle);
 		//Création du label Departement
 		JLabel lblDep = new JLabel("Département :");
 		lblDep.setBounds(60, 30, 120, 15);
@@ -155,11 +157,6 @@ public class JPanelAddTarif extends JPanel{
 		lblAffichage.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAffichage.setBounds(134, 347, 350, 19);
 		this.add(lblAffichage);
-		//Création du label Titre
-		JLabel lblTitle = new JLabel("Ajout d'un nouveau tarif");
-		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitle.setBounds(215, 0, 180, 15);
-		this.add(lblTitle);
 		//Création du boutton enregistrer
 		btnSave = new JButton("Enregistrer");
 		btnSave.setBounds(420, 280, 120, 25);
@@ -241,8 +238,8 @@ public class JPanelAddTarif extends JPanel{
 	 */
 	private void checkSaisies() throws Exception
 	{
-		Modules.effacerErreur(lblMsgError);
-		saisieDep = checkDepInBrochure(txtDep);
+		Modules.clearLabel(lblMsgError);
+		saisieDep = Modules.checkDepIsNotInBrochure(txtDep, brochure);
 		saisies[0] = Modules.checkDoubleSaisie(txtPriseChg, lblMsgError);
 		saisies[1] = Modules.checkDoubleSaisie(txtASJour, lblMsgError);
 		saisies[2] = Modules.checkDoubleSaisie(txtARJour, lblMsgError);
@@ -251,41 +248,6 @@ public class JPanelAddTarif extends JPanel{
 		saisies[5] = Modules.checkDoubleSaisie(txtHorJour, lblMsgError);
 		saisies[6] = Modules.checkDoubleSaisie(txtHorNuitDim, lblMsgError);
 	}//Fin checkSaisies()
-	
-	/**
-	 * Vérifie le type de donnée saisi dans la zone txtDep, et vérifie que cette valeur ne correspond pas à un departement de la brochure
-	 * @param La zone de saisie txtDep à vérifier [JTextField]
-	 * @param La brochure de tarifs où vérifier si le département y est présent [Brochure]
-	 * @return La saisie castée en entier naturel si elle n'est pas dans la brochure
-	 */
-	private int checkDepInBrochure(JTextField field) throws Exception
-	{
-		//On convertit la saisie en entier naturel
-		int nb = Modules.checkIntSaisie(txtDep, lblMsgError);
-		//Si la saisie est supérieure à 100, on lève une exception
-		if(nb > 100)
-		{
-			throw new Exception("La saisie dans le champ \"" + field.getName() + "\" est incorrecte : <br />\"" + Integer.toString(nb) + 
-								"\" must be lower than 100 !", new Throwable("moreThan1Hundred"));
-		}//Fin if(nb > 100)
-		boolean trouve = false;
-		//Si la saisie correspond à un departement de la brochure, on met "trouve" à True pour lever une Exception plus tard
-		for(Tarif tarif : brochure.getListeTarifs())
-		{
-			if(nb == tarif.getDepartement())
-			{
-				trouve = true;
-			}//Fin if(Dep == tarif.getDepartement())
-		}//Fin for each
-		//Si à la fin de la boucle, trouve est à True, on lève une exception
-		if(trouve == true)
-		{
-			Modules.clearAndFocusField(field);
-			throw new Exception("La saisie dans le champ \"" + field.getName() + "\" est incorrecte : <br />\"" + Integer.toString(nb) + 
-								"\" is already registed !", new Throwable("alreadyRegisted"));
-		}//Fin if(trouve == true)
-		return nb;
-	}//Fin checkDepInBrochure()
 
 	/**
 	 * Effectue les contrôles des saisies et enregistre le nouveau tarif dans la bdd s'il n'y a pas d'erreurs
@@ -389,7 +351,7 @@ public class JPanelAddTarif extends JPanel{
 		txtARNuitDim.setText("");
 		txtHorJour.setText("");
 		txtHorNuitDim.setText("");
-	}
+	}//Fin clearJTextFields()
 	
 	/**
 	 * Réinitialise le JPanelAddTarif
@@ -405,5 +367,18 @@ public class JPanelAddTarif extends JPanel{
 		setEnabledJTextFields(true);
 		//On vide les zones de texte
 		clearJTextFields();
-	}
+	}//Fin reinitJPanelAddTarif()
+	
+	/**
+	 * Redéfinition du modificateur de la visibilité, une réinitialisation du panel a lieu avant de modifier l'attribut
+	 */
+	public void setVisible(boolean value)
+	{
+		super.setVisible(value);
+		if(value == true)
+		{
+			reinitJPanelAddTarif();
+			txtDep.requestFocus();
+		}//fin if(value == true)
+	}//Fin setVisible()
 }//Fin class
