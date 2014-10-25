@@ -64,6 +64,16 @@ public class Brochure {
 		this.listeTarifs = listeTarifs;
 	}
 	
+	/**
+	 * Constructeur de la brochure à partir d'une brochure déjà existante
+	 * @param La brochure servant à initialiser la nouvelle brochure [Brochure]
+	 */
+	public Brochure(Brochure brochure)
+	{
+		this.nom = brochure.getNom();
+		this.listeTarifs = brochure.getListeTarifs();
+	}
+	
 	//**********//
 	// Méthodes //
 	//**********//
